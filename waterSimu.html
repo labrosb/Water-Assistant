@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Water Consumption Simulator</title>
+    <link rel="stylesheet" href="waterSimu.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/knobKnob/knobKnob.css" /> 
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="main">
+            <header>
+                <h1>Water Consumption Simulator</h1>
+                <h2>  &#9656; Bathroom &#9666;</h2>
+                <p id="outputRegion">0.00</p>
+                <p>liters</p>
+            </header>
+            <div id="bars">
+                <div id="control"><!-- The knob markup will go here --></div><!-- The colorful dividers will go here -->
+            </div>
+            <div id="otherControl">
+                <p class="suggestion">Turn the knob to adjuest the speed of flow.</p><br><br>
+                <p class="suggestion">- Select Action -</p><br>
+                <p onclick="flushWater()" class="clickAble" onmouseover="showCursor(this)" onmouseout="removeCustor(this)">Flush the Toilet</p>
+                <p onclick="reset()" class="clickAble" onmouseover="showCursor(this)" onmouseout="removeCustor(this)">Reset the Data</p>
+                </div>
+        </div>
+        </div>
+    <!-- JavaScript includes -->
+   <script src="plugins/jQuery/jQuery-2.1.3.min.js"></script>
+    <script src="assets/knobKnob/transform.js"></script>
+    <script src="assets/knobKnob/knobKnob.jquery.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="waterSimu.js"></script>
+</body>
+</html>

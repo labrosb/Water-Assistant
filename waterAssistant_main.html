@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Water Assistant</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Font Awesome Icons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <!-- Theme style -->
+    <link href="dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
+    <script src="Chart.min.js"></script>
+    <style>
+        html{
+            background:url('../img/bg.jpg') #1f2129;
+            position:relative;
+        }
+
+        body{
+            font:14px/1.3 'Segoe UI',Arial, sans-serif;
+        }
+        
+        #mainContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -240px;
+            margin-left: -160px;
+            width: 320px; 
+            height: 480px;
+            background-color: rgb(236,240,245);
+            border: 1px solid white;
+            box-shadow: 0px 0px 15px white;
+            text-align: center;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body class="skin-blue">
+    <div class="wrapper">
+    <div id="mainContainer">
+        <header class="main-header" >
+          <p class="logo" style="width: 300px;">
+              <span style="cursor: pointer;">&#9776;</span>
+              <span style="margin: 0px 48px; " >Water Assistant</span> 
+          </p>
+        </header>
+        <div>
+            <h3>The Situation</h3>
+            <h4 id="totalAmount">0 Liters</h4>
+            <div id="canvas-holder" style="margin: 0px auto; width:80%;">
+                <canvas id="chart-area" width="300" height="300"/>
+            </div>
+        </div>
+        <div class="info-box bg-aqua" style="margin: 0px 0px;">
+        <span class="info-box-icon" ><i class="fa fa-bookmark-o" ></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Bathroom</span>
+                <span class="info-box-number" id="outputNumber">360 liters</span>
+                <div class="progress">
+                    <div class="progress-bar" id="outputRatio" style="width: 70%"></div>
+                </div>
+                <span class="progress-description" id="outputMessage">
+                    70% Consumption in 30 Days
+                </span>
+            </div>
+        </div>
+        <div class="box box-default box-solid" style="margin: 0px 0px;" id="quizBox">
+            <div class="box-header with-border" style="margin-top: 0px; background-color: rgb(0,192,239);">
+                <h3 class="box-title" style="color: white;">New Quiz</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus" style="color: white;"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body" style="display: block;" id="quizMessage">Do you use a toilet as a waste basket?<br><br>
+                <a class="btn btn-primary" onclick="submitQuiz(false)" >No</a>
+                <a class="btn btn-primary" onclick="submitQuiz(true)" >Yes</a>
+            </div>
+        </div>
+        <div class="info-box bg-green" style="margin: 0px 0px;">
+        <span class="info-box-icon"><i class="fa fa-bookmark-o" ></i></span>
+        <div class="info-box-content">
+            <span class="info-box-text">Kitchen</span>
+            <span class="info-box-number">62 liters</span>
+            <!-- The progress section is optional -->
+            <div class="progress">
+                <div class="progress-bar" style="width: 13%"></div>
+            </div>
+            <span class="progress-description">
+                13% Consumption in 30 Days
+            </span>
+            </div><!-- /.info-box-content -->
+        </div>
+        <div class="info-box bg-yellow" style="margin: 0px 0px;">
+            <span class="info-box-icon" ><i class="fa fa-bookmark-o" ></i></span>
+            <div class="info-box-content">
+            <span class="info-box-text">Laundry room</span>
+            <span class="info-box-number">72 liters</span>
+            <!-- The progress section is optional -->
+            <div class="progress">
+                <div class="progress-bar" style="width: 15%"></div>
+            </div>
+            <span class="progress-description">
+                15% Consumption in 30 Days
+            </span>
+            </div>
+        </div>
+        <div class="info-box bg-red" style="margin: 0px 0px;">
+        <span class="info-box-icon"><i class="fa fa-bookmark-o" ></i></span>
+        <div class="info-box-content">
+            <span class="info-box-text">Garden</span>
+            <span class="info-box-number">124 liters</span>
+            <!-- The progress section is optional -->
+            <div class="progress">
+                <div class="progress-bar" style="width: 23%"></div>
+            </div>
+            <span class="progress-description">
+                23% Consumption in 30 Days
+            </span>
+        </div>
+        </div>
+    </div>
+    <!-- Background Engine -->
+    <script>
+        var totalAmountText = document.getElementById('totalAmount');
+        var otherCons = 60 + 72 + 40;
+		var polarData = [
+				{
+					value: 10,
+					color:"rgb(0,192,239)",
+					highlight: "rgb(0,154,191)",
+					label: "Bathroom"
+				},
+				{
+					value: 62,
+					color: "rgb(0,166,90)",
+					highlight: "rgb(0,133,72)",
+					label: "Kitchen"
+				},
+				{
+					value: 72,
+					color: "rgb(243,156,18)",
+					highlight: "rgb(194,125,14)",
+					label: "Lanudry Room"
+				},
+				{
+					value: 40,
+					color: "rgb(221,75,57)",
+					highlight: "rgb(177,60,46)",
+					label: "Garden"
+				}
+
+			];
+
+        window.onload = function(){
+
+            // get data
+            waterConsumption = parseInt(localStorage.getItem("ws_consumption"));
+
+            updateDataNow();
+
+
+            var ctx = document.getElementById("chart-area").getContext("2d");
+            window.myPolarArea = new Chart(ctx).PolarArea(polarData, {
+                responsive:true
+            });
+
+            startTimer();
+        };
+        
+        var waterConsumption;
+        var myTimeInterval;
+        var hasQuiz = true;
+        var WARNING_1 = 280;
+        var outputNumber = document.getElementById("outputNumber");
+        var outputRatio = document.getElementById("outputRatio");
+        var outputMessage = document.getElementById("outputMessage");
+        var quizBox = document.getElementById("quizBox");
+        
+        function startTimer(){
+            if(myTimeInterval == undefined)
+                myTimeInterval = setInterval(function(){ myTimer() } , 1000);
+        }
+        
+        function myTimer() {
+            waterConsumption = parseInt(localStorage.getItem("ws_consumption"));
+            updateDataNow();
+            
+                var ctx = document.getElementById("chart-area").getContext("2d");
+            window.myPolarArea = new Chart(ctx).PolarArea(polarData, {
+                responsive:true, animation: false
+            });
+        }
+        
+        function updateDataNow()
+        {
+            if(waterConsumption == undefined)
+                return;
+            
+            polarData[0].value = waterConsumption;
+            outputNumber.innerHTML = waterConsumption + " liters";
+            var tmpRatio = waterConsumption / 280.0 * 100.0;
+            //console.log(tmpRatio);
+            outputRatio.style.width = tmpRatio + "%";
+            outputMessage.innerHTML = tmpRatio.toFixed(0) + "% Consumption in 30 Days";
+            
+            if(hasQuiz && waterConsumption > 100)
+            {
+                quizBox.style.display = "block";
+            }
+            else
+                 quizBox.style.display = "none";    
+             //   if(hasQuiz)
+            //        quizBox.style.display = "block";
+            //    else
+            //        quizBox.style.display = "none";    
+            
+            if(waterConsumption > 0)
+                totalAmountText.innerHTML = "&#9656; " + (otherCons + waterConsumption) + " liters &#9666;";
+            
+            if((otherCons + waterConsumption) > 400)
+                totalAmountText.innerHTML = "&#9656; " + (otherCons + waterConsumption) + " liters &#9666;<br><p style='font-size: 0.7em; color: red; font-style: italic;' >At this rate of water consumption, the fresh water resouces will depleted down to 65% in the next generation.</p>";
+        }
+        
+        function submitQuiz(input)
+        {
+            if(input == false)
+            {
+                quizBox.style.display = "none";
+                hasQuiz = false;
+            }
+            else{
+                var qBox = document.getElementById("quizMessage");
+                 quizBox.innerHTML = "Flushing toilet unnecessary would make you waste water unnecessary for 13 liters and you can shower with this amount of water for two minutes.<br><br>" + '<a class="btn btn-primary" onclick="submitQuiz(false)" >Close</a>';
+                
+            }
+        }
+        
+        
+	</script>
+        
+    <!-- jQuery 2.1.3 -->
+    <script src="plugins/jQuery/jQuery-2.1.3.min.js"></script>
+    <!-- Bootstrap 3.3.2 JS -->
+    <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- AdminLTE App -->
+    <script src="dist/js/app.min.js" type="text/javascript"></script>
+    </div>
+</body>
+</html>

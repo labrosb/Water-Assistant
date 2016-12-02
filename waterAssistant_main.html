@@ -34,9 +34,28 @@
             text-align: center;
             overflow-y: scroll;
         }
+		.button {
+            position: fixed;
+            left: 50%;
+            margin-left: -160px;
+			border-radius:5px ;
+			background-color: #367fa9;
+			border:1px solid #367fa9;
+			color: #edf3f3;
+			cursor: pointer;
+			float: left;
+			padding:5px 0;
+			top: 5%;
+			width: 320px;
+		}
+		.button:hover {
+			background-color: #028bac;
+			border:1px solid #028bac;
+		}	
     </style>
 </head>
 <body class="skin-blue">
+	<button class="button" onclick="window.open('waterSimu.html')"> Open Waterflow Simulator </button>
     <div class="wrapper">
     <div id="mainContainer">
         <header class="main-header" >
